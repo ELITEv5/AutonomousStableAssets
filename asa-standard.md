@@ -27,4 +27,4 @@ An ASA replaces human discretion with deterministic math, providing a censorship
 
 ## Reference Implementation
 pSunDAI – first ASA deployed on PulseChain.  
-https://github.com/your-repo-link
+[https://github.com/your-repo-link](https://github.com/ELITEv5/AutonomousStableAssets)
