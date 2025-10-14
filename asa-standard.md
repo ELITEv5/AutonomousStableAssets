@@ -1,7 +1,7 @@
 # ASA Standard v1.0  
 **Autonomous Stable Asset (ASA)**  
 
-**Author:** your-handle  
+**Author:** +ELITE Team6  
 **Status:** Draft  
 **Created:** YYYY-MM-DD  
 
