@@ -174,15 +174,6 @@ And those rules exist forever.
 
 ---
 
-## 🧩 Related Reading
-
-- [How to Use the pSunDAI Vault](../guides/how-to-use-vault.md)  
-- [How Liquidation Works](../guides/how-liquidation-works.md)  
-- [Oracle Health & Emergency Guide](../guides/oracle-health-and-emergency.md)  
-- [Comparison: pSunDAI vs. Liquid Loans](./comparison-liquidloans.md)  
-- [Comparison: pSunDAI vs. Liquity](./comparison-liquity.md)
-
----
 
 > **Immutable. Autonomous. Fair.**  
 > pSunDAI isn’t “DeFi.”  
