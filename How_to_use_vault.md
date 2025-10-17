@@ -1,194 +1,209 @@
-# ☀️ How to Use the pSunDAI Vault on PulseChain
-
-This guide explains how to interact directly with the **pSunDAI PegVault** using the [PulseChain block explorer](https://scan.pulsechain.com).  
-You’ll learn how to:
-- Deposit PLS as collateral  
-- Wake up (refresh) the Oracle  
-- Check how much you can safely mint  
-- Mint your own pSunDAI stablecoins  
-- Repay and withdraw collateral  
-- Understand liquidation safety  
+# ☀️ How to Use the pSunDAI Vault on PulseChain  
+*The complete guide to minting and managing your own autonomous stable asset.*
 
 ---
 
 ## 🧠 Overview
 
-**Vault Contract Address:**
+The **pSunDAI Vault** lets you lock PLS as collateral and mint **pSunDAI**,  
+a decentralized, immutable stable asset on PulseChain — no admin keys, no upgrades, no middlemen.
+
+You interact directly with the smart contract through the official explorer:
+👉 [https://scan.pulsechain.com](https://scan.pulsechain.com)
+
+---
+
+### 🔹 Key Contract Addresses
+
+| Component | Address | Description |
+|------------|----------|-------------|
+| **PegVault** | `0x52d27c5F3c0a5A733E7f2d5c21Da96b283EF7086` | Main pSunDAI Vault |
+| **Oracle** | (auto-used by vault) | Price feed via WPLS/DAI pairs |
+| **pSunDAI Token** | (add to wallet manually) | Stable asset you mint |
+
+---
+
+## 🧩 Step-by-Step Guide
+
+### **Step 1. Open the Contract**
+1. Go to [https://scan.pulsechain.com](https://scan.pulsechain.com)  
+2. Paste the PegVault address:  
 0x52d27c5F3c0a5A733E7f2d5c21Da96b283EF7086
 
 
-**Oracle Contract:** automatically used by the Vault  
-**Stablecoin Token:** pSunDAI (`pSUNDAI`)
-
-Each vault is *isolated* — your position is yours alone.  
-There are no admin keys, no upgrades, and no pooled debt.
+3. Click **Contract** → then **Connect Wallet** (MetaMask, Rabby, etc.)
 
 ---
 
-## 🪙 Step-by-Step Guide
+### **Step 2. Deposit PLS Collateral**
+You must first lock PLS into the Vault.
 
-### **Step 1. Open the PulseChain Scanner**
-Go to 👉 [https://scan.pulsechain.com](https://scan.pulsechain.com)
+1. Under **Write Contract**, find `depositPLS()`.  
+2. Enter the amount in **wei** (18 decimals).  
+- Example:  
+  `10,000 PLS = 10000000000000000000000`
+3. Click **Write**, confirm in your wallet.  
+4. Wait for the transaction to confirm.
 
----
-
-### **Step 2. Load the PegVault Contract**
-Paste this address into the search bar:
-
-0x52d27c5F3c0a5A733E7f2d5c21Da96b283EF7086
-
-
-Press **Enter** → Click **“Contract”** → then **“Connect Wallet.”**
+Your Vault is now created and holds your PLS.
 
 ---
 
-### **Step 3. Wake Up the Oracle (Optional but Recommended)**
-If the network has been quiet, the Oracle might be stale.  
-Refreshing it ensures your `maxMintable` calculation is accurate.
+### **Step 3. Wake Up the Oracle (Important for First-Time Users)**
+If the network has been quiet or it’s your first deposit,  
+the Oracle may not have a fresh price yet.
 
-**To refresh the Oracle:**
-1. In **Write Contract**, find `mint`.
-2. Enter a tiny amount such as `1000000000000` (that’s 0.000001 pSunDAI).
-3. Click **“Write”** → confirm → wait for it to complete.
-4. Then immediately call `repay(1000000000000)` to clear the tiny mint.
+Follow these steps to safely “wake” it:
 
-✅ This triggers the Oracle update without changing your position.
+1. In **Write Contract**, find `mint()`.  
+2. Enter a **tiny test value**, e.g.  
+1000000000000
 
----
 
-### **Step 4. Deposit PLS Collateral**
-1. In **Write Contract**, select `depositPLS`.  
-2. Enter your deposit amount in **wei (18 decimals)**.  
-   - Example: `10,000 PLS = 10000000000000000000000`
-3. Click **“Write”** and confirm in your wallet.
+(≈ 0.000001 pSunDAI)
+3. Click **Write** and confirm.
+4. Once confirmed, immediately call `repay(1000000000000)` to burn that tiny amount.
 
-Once confirmed, your PLS is locked as collateral in your vault.
+✅ This updates the Oracle and ensures your price data is current.  
+(You’ll only need to do this once per session or after long idle periods.)
 
 ---
 
-### **Step 5. Check Your Max Mintable Amount**
-1. Switch to **Read Contract**.
-2. Find `maxMintable(address)`.
-3. Paste your wallet address.
-4. Click **“Read.”**
+### **Step 4. Check How Much You Can Mint**
+Now that your Oracle is awake and your vault is funded:
 
-You’ll get a large integer result — this is the maximum pSunDAI you can mint, in wei.
+1. Click **Read Contract**.  
+2. Find `maxMintable(address)` and paste your wallet address.  
+3. Click **Read**.  
+
+You’ll see a large number in **wei** — that’s your **maximum mintable amount**  
+based on your collateral and the live PLS/USD price.
+
+> 💡 Tip: To stay safe, plan to mint about **95%** of that number.
 
 ---
 
-### **Step 6. Mint pSunDAI**
+### **Step 5. Mint pSunDAI**
 1. Go back to **Write Contract**.  
-2. Find the `mint` function.  
-3. Paste the value you copied from `maxMintable` (or use slightly less for safety, e.g., 95% of it).  
-4. Click **“Write”** and confirm in your wallet.
+2. Select the `mint()` function.  
+3. Paste your safe mint amount (from `maxMintable * 0.95`).  
+4. Click **Write** and confirm the transaction.
 
-When the transaction confirms, your **pSunDAI** balance will appear in your wallet.
+✅ You’ve now minted your own pSunDAI — fully backed by your PLS collateral.
 
-> 💡 **Tip:** Import the pSunDAI token address manually if you don’t see it right away.
+> Add the pSunDAI token to your wallet to see it appear.
+
+---
+
+### **Step 6. Check Your Vault Health**
+At any time, use `getVaultInfo(address)` under **Read Contract**.
+
+It shows:
+- **collateral:** total PLS locked  
+- **debt:** pSunDAI minted  
+- **ratio:** collateral ratio (target ≥ 150%)  
+- **isSafe:** true = healthy, false = unsafe  
+- **liquidationPrice:** price of PLS that would trigger liquidation  
+
+Keep your ratio above **150%** to avoid liquidation.
 
 ---
 
 ## 💰 Managing Your Vault
 
-### **Check Vault Health**
-In **Read Contract**, use:
-- `getVaultInfo(address)` → shows your collateral, debt, ratio, and liquidation price.  
-- If your ratio drops below **150%**, your vault becomes unsafe and can be liquidated.  
-
----
-
 ### **Repay Debt**
-When you want to reduce or close your position:
+To repay pSunDAI and unlock PLS:
 
-1. Make sure you hold enough pSunDAI in your wallet.  
-2. In **Write Contract**, select `repay`.  
-3. Enter the amount (in wei).  
-4. Click **“Write.”**
+1. Make sure you have pSunDAI in your wallet.  
+2. In **Write Contract**, click `repay()`.  
+3. Enter the amount you want to burn (in wei).  
+4. Click **Write** and confirm.
 
-This burns pSunDAI and lowers your vault’s debt.  
-If your ratio is now safe, the vault automatically resets its “unsafe time.”
+This lowers your debt and improves your safety ratio.
 
 ---
 
 ### **Withdraw Collateral**
-After repaying (or if you’re over-collateralized):
+Once your debt is reduced (or zero), you can withdraw some or all PLS.
 
-1. In **Write Contract**, select `withdrawPLS`.  
-2. Enter the amount of PLS (in wei).  
-3. Confirm you’re outside the withdrawal cooldown (≈3 hours).  
-4. Click **“Write.”**
+1. In **Write Contract**, click `withdrawPLS()`.  
+2. Enter the amount (in wei).  
+3. Wait for any cooldowns to expire (≈3 hours).  
+4. Click **Write** and confirm.
 
-Your PLS will be unwrapped from WPLS and sent back to your wallet.
-
-> ⚠️ If your withdrawal would drop your ratio below 150%,  
-> the transaction will revert for safety.
+> ⚠️ The vault will automatically revert any withdrawal  
+> that makes your ratio fall below 150%.
 
 ---
 
 ### **Combined Actions**
-The Vault supports combo calls:
+The vault includes combo calls for convenience:
 
 | Function | Description |
-|-----------|--------------|
+|-----------|-------------|
 | `depositAndMint(uint256 mintAmount)` | Deposit PLS and mint in one transaction |
-| `repayAndWithdraw(uint256 repayAmount, uint256 withdrawAmount)` | Repay debt and withdraw collateral in one go |
+| `repayAndWithdraw(uint256 repayAmount, uint256 withdrawAmount)` | Burn pSunDAI and reclaim PLS together |
 
 ---
 
-## ⚔️ Liquidations (for Experts)
+## ⚔️ Liquidations (Advanced)
 
-If a vault falls below **150% collateral ratio**, anyone can liquidate it using:
+If a user’s collateral ratio falls below **150%**, their vault becomes *unsafe*.  
+Anyone can liquidate it to keep the system stable.
 
 liquidate(address vaultOwner, uint256 repayAmount)
 
 
-- The liquidator burns pSunDAI to repay that debt.
-- In return, they receive a proportional amount of PLS plus a liquidation reward.  
-- The protocol uses the Oracle price at that moment to calculate fairness.
+
+- You repay part of their debt in pSunDAI.  
+- You receive a proportional amount of their PLS + a small liquidation reward.  
+
+Liquidations also trigger an Oracle refresh automatically.
 
 ---
 
-## 🧮 Oracle Health Check
+## 🧮 Oracle & Safety
 
-- The Oracle averages prices from two WPLS/DAI pairs.  
+- The Oracle uses two large WPLS/DAI pairs for price data.  
 - Updates occur automatically during mint, repay, or liquidation calls.  
-- You can check freshness using:
-
+- Health check:  
 isOracleHealthy()
 
 
-If it returns **true**, the Oracle data is <5 minutes old.
+returns **true** if data < 5 minutes old.
+
+If prices are stale, vault functions that depend on them will **revert safely** until the next valid update.
 
 ---
 
-## ✅ Summary of Functions
+## 🧾 Summary of Core Functions
 
-| Action | Function | Type | Notes |
-|--------|-----------|------|-------|
-| Deposit PLS | `depositPLS()` | Write | Locks collateral |
-| Check max mint | `maxMintable(address)` | Read | Returns safe mint limit |
-| Mint pSunDAI | `mint(amount)` | Write | Issues pSunDAI |
-| Repay debt | `repay(amount)` | Write | Burns pSunDAI |
-| Withdraw PLS | `withdrawPLS(amount)` | Write | Unlocks collateral |
-| Check vault info | `getVaultInfo(address)` | Read | Shows ratio and liquidation price |
-| Liquidate unsafe vault | `liquidate(address, amount)` | Write | Burns pSunDAI for collateral |
+| Purpose | Function | Type | Notes |
+|----------|-----------|------|-------|
+| Deposit PLS | `depositPLS()` | Write | Locks PLS collateral |
+| Check max mint | `maxMintable(address)` | Read | Safe mint capacity |
+| Mint stablecoin | `mint(uint256)` | Write | Issues pSunDAI |
+| Repay | `repay(uint256)` | Write | Burns pSunDAI debt |
+| Withdraw | `withdrawPLS(uint256)` | Write | Unlocks PLS |
+| Vault info | `getVaultInfo(address)` | Read | Shows ratio, liq price |
 | Oracle status | `isOracleHealthy()` | Read | Confirms TWAP freshness |
+| Liquidate unsafe vault | `liquidate(address, amount)` | Write | Optional for experts |
 
 ---
 
-## 🧭 Safety Notes
+## ⚙️ Tips for Success
 
-- Keep your **collateral ratio >150%** at all times.  
-- The system liquidates under-collateralized vaults automatically for stability.  
-- Wait at least **30 minutes** between Oracle refreshes for new TWAP data.  
-- If the Oracle fails or is stale >5 minutes, mint/repay will revert until refreshed.  
+- Keep your ratio above **150%** for safety.  
+- If `maxMintable()` returns `0`, the Oracle may be stale — run the **wake-up sequence** (tiny mint + repay).  
+- Wait **30+ minutes** between Oracle refreshes for new TWAP data.  
+- Always leave a **5–10% buffer** below your max mint value.  
 
 ---
 
-## 🎉 You Did It!
+## 🎉 Congratulations!
 
-You now understand how to use the pSunDAI PegVault directly from the blockchain explorer —  
-no UI, no admin keys, just smart contracts.
+You’ve successfully interacted with the immutable pSunDAI Vault directly on-chain.  
+You now control your own decentralized stablecoin — backed by your PLS, governed by math, not people.
 
-> **Immutable • Permissionless • Autonomous**  
-> The way DeFi was meant to be.
+> **Immutable. Autonomous. Free.**  
+> That’s the pSunDAI way.
