@@ -66,8 +66,7 @@ Click peekPrice()
 
 You’ll see two values:
 
-text
-Copy code
+
 price (uint256):  30425980603125
 timestamp (uint256): 1760658475
 If the timestamp is within 300 seconds of the current block time,
@@ -84,8 +83,7 @@ Deposit first:
 depositPLS()
 Mint a small “dust” amount to trigger an update:
 
-solidity
-Copy code
+
 mint(1000000000000) // 0.000001 pSunDAI
 Wait for the transaction to confirm.
 
