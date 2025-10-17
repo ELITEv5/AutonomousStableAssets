@@ -16,8 +16,6 @@ You’ll learn how to:
 **Vault Contract Address:**
 0x52d27c5F3c0a5A733E7f2d5c21Da96b283EF7086
 
-yaml
-Copy code
 
 **Oracle Contract:** automatically used by the Vault  
 **Stablecoin Token:** pSunDAI (`pSUNDAI`)
@@ -39,8 +37,6 @@ Paste this address into the search bar:
 
 0x52d27c5F3c0a5A733E7f2d5c21Da96b283EF7086
 
-yaml
-Copy code
 
 Press **Enter** → Click **“Contract”** → then **“Connect Wallet.”**
 
@@ -145,8 +141,6 @@ If a vault falls below **150% collateral ratio**, anyone can liquidate it using:
 
 liquidate(address vaultOwner, uint256 repayAmount)
 
-yaml
-Copy code
 
 - The liquidator burns pSunDAI to repay that debt.
 - In return, they receive a proportional amount of PLS plus a liquidation reward.  
@@ -162,8 +156,6 @@ Copy code
 
 isOracleHealthy()
 
-pgsql
-Copy code
 
 If it returns **true**, the Oracle data is <5 minutes old.
 
