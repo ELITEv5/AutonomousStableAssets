@@ -39,7 +39,7 @@ You interact directly with the smart contract through the official explorer:
 You must first lock PLS into the Vault.
 
 1. Under **Write Contract**, find `depositPLS()`.  
-2. Enter the amount in **wei** (18 decimals).  
+2. Enter the amount in **wei** (18 decimals).  (Don't be a PAXOS)
 - Example:  
   `10,000 PLS = 10000000000000000000000`
 3. Click **Write**, confirm in your wallet.  
