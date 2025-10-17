@@ -25,8 +25,6 @@ A vault is safe if:
 
 collateral * price * 100 >= debt * COLLATERAL_RATIO * 1e18
 
-yaml
-Copy code
 
 If this condition fails, liquidation becomes available.
 
@@ -36,8 +34,7 @@ If this condition fails, liquidation becomes available.
 
 liquidate(address vaultOwner, uint256 repayAmount)
 
-markdown
-Copy code
+
 
 ### Parameters:
 - `vaultOwner` → Address of the unsafe vault.  
@@ -64,8 +61,7 @@ If you call:
 
 liquidate(0xAliceAddress, 20e18)
 
-yaml
-Copy code
+
 
 You repay 20 pSunDAI of Alice’s debt and receive a reward of ~2,700 PLS,  
 based on the oracle price and time-based bonus.
@@ -78,8 +74,7 @@ baseCollateral = (repayAmount * 1e18) / price
 bonus = (baseCollateral * MAX_BONUS_BPS * timeElapsed) / (AUCTION_TIME * 10000)
 reward = baseCollateral + bonus
 
-yaml
-Copy code
+
 
 ### Explanation:
 - **baseCollateral** → The PLS equivalent of the debt you repaid.  
