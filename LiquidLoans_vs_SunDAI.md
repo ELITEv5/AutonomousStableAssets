@@ -143,7 +143,7 @@ Both projects contribute vital infrastructure to PulseChain DeFi:
 
 ### 🔗 Related Docs
 - [How to Use the pSunDAI Vault](https://github.com/ELITEv5/AutonomousStableAssets/blob/main/How_to_use_vault.md)
-- [How Liquidation Works](../guides/how-liquidation-works.md)
+- [How Liquidation Works](https://github.com/ELITEv5/AutonomousStableAssets/blob/main/how_liquidation_works.md)
 - [Autonomous Stable Asset (ASA) Concept](./asa-concept.md)
 
 ---
