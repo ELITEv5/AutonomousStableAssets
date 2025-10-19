@@ -182,6 +182,26 @@ No funds are held, no redemptions are promised, and no governance exists.
 They operate as **digital infrastructure**, not financial intermediaries.  
 Under frameworks like the U.S. *Genius Act*, ASAs represent code-based commodities — *not payment instruments.*
 
+⚖️ Trademark & Branding Statement
+
+SunDAI™, pSunDAI™, and Destiny Vault™ are unique digital asset and protocol identifiers developed by Elite Team 6 for the Autonomous Stable Asset (ASA) framework.
+
+These names represent original creations inspired by solar and philosophical concepts of stability and energy — not affiliations with any existing financial entity or token.
+
+“SunDAI” reflects the idea of light, consistency, and self-sustaining economic gravity within decentralized systems.
+
+Elite Team 6 confirms that:
+
+“SunDAI” and “pSunDAI” are independent software-based protocols and are not associated, sponsored, or endorsed by the Maker Foundation, the Dai Foundation, or the MakerDAO project.
+
+The term “DAI” as used within “SunDAI” is purely descriptive and symbolic, referencing the ancient Japanese word “Dai” (大) meaning “great” or “universal,” consistent with the philosophical nature of the project.
+
+No interoperability, derivative use, or functional relationship with the MakerDAO DAI stablecoin is implied or intended.
+
+All logos, brand marks, and documentation associated with SunDAI, pSunDAI, and Destiny Vault are the intellectual property of Elite Team 6 © 2025, protected under applicable copyright and trademark laws.
+
+Use of these terms or marks for derivative commercial projects requires attribution and written consent from Elite Team 6.
+
 ---
 
 ## 🪙 12. The Birth of Autonomous Finance
