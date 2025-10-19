@@ -203,7 +203,7 @@ an **Immutable Monetary Layer** governed only by mathematics.
 → Founders of the **Autonomous Stable Asset (ASA)** framework  
 → Builders of **pSunDAI**, the first immutable ASA on PulseChain  
 
-> “We don’t make tokens. We make rules that make money behave.”  
+> “We don’t make tokens. We make rules.”  
 > — Elite Team 6, 2025  
 
 ---
