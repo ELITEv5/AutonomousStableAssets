@@ -1,153 +1,143 @@
-🟣 pSunDAITriOracleEliteV2_PulseX_Final
-Triple TWAP Median Oracle for PulseChain Autonomous Stable Assets
+# pSunDAITriOracleEliteV2_PulseX_Final
 
-A permissionless, immutable, multi-stable Uniswap V2 oracle designed for the Autonomous Stable Asset vault system (pSunDAIvaultV2).
+**Immutable Triple-Pair TWAP Oracle for PulseChain Autonomous Stable Assets**
 
-🧩 Overview
+---
 
-pSunDAITriOracleEliteV2_PulseX_Final aggregates live trading data from three key PulseX pairs:
+## Overview
 
-WPLS / DAI (V1)
+The `pSunDAITriOracleEliteV2_PulseX_Final` contract aggregates price data from three PulseX trading pairs:
 
-WPLS / DAI (V2)
+- WPLS / DAI (V1)
+- WPLS / DAI (V2)
+- WPLS / USDC
 
-WPLS / USDC
+It computes a median time-weighted average price (TWAP), normalized to 18 decimals, to provide a secure, manipulation-resistant on-chain USD price feed.
 
-It computes a normalized median TWAP (Time-Weighted Average Price), providing a manipulation-resistant, on-chain USD price feed for WPLS.
+This oracle is immutable once deployed and linked to a vault. It is designed for the `pSunDAIvaultV2` but can be used publicly as a decentralized price reference.
 
-The oracle is immutable once deployed and vault-linked — a fully decentralized pricing primitive with no admin controls.
+---
 
-⚙️ Key Features
+## Features
 
-🔒 Immutable Architecture — No upgradeability, no ownership, no admin keys
+- **Immutable and Autonomous** — No owner, no upgradability, no admin functions  
+- **Triple-Source Aggregation** — Combines three pairs using median and deviation filtering  
+- **TWAP-Based Pricing** — 30-minute minimum interval with a 2-minute freshness limit  
+- **Multi-Stable Support** — Supports both 18-decimal (DAI) and 6-decimal (USDC) pairs  
+- **Liquidity Safeguard** — Ignores pairs with less than $50,000 equivalent stable liquidity  
+- **Permissionless Updates** — Anyone can call `updatePublic()` or `prime()`  
+- **Vault Integration** — The linked vault has exclusive access to `getPriceWithTimestamp()`  
 
-⚖️ Triple Source Aggregation — Median + deviation filters eliminate outliers
+---
 
-🕒 TWAP-Driven Stability — 30-minute minimum interval, 2-minute freshness window
+## Function Summary
 
-🪙 Multi-Decimal Normalization — Handles both 18-decimal (DAI) and 6-decimal (USDC) assets
+| Function | Access | Description |
+|-----------|---------|-------------|
+| `setVault(address)` | Deployer only (once) | Permanently links the vault |
+| `prime()` | Public | Initializes the TWAP before vault operation |
+| `updatePublic()` | Public | Recalculates the TWAP; can be called by anyone |
+| `getPriceWithTimestamp()` | onlyVault | Primary price fetch function for the vault |
+| `peekPrice()` | Public (view) | Returns the last cached price and timestamp |
+| `isHealthy()` | Public (view) | Confirms that underlying pairs are updating regularly |
 
-🔁 Public Refresh Access — Anyone can update via updatePublic()
+---
 
-📡 Instant Read Access — peekPrice() available to all users and UIs
+## Access Control
 
-🧱 Liquidity Safeguards — Ignores pairs under $50k equivalent in liquidity
+| Role | Permission |
+|------|-------------|
+| **Deployer** | May call `setVault()` once |
+| **Vault** | May call `getPriceWithTimestamp()` |
+| **Public** | May call all other functions freely |
 
-🧠 Function Summary
-Function	Type	Access	Description
-setVault(address)	One-time admin	Only deployer	Permanently links the vault (immutable after)
-prime()	Public	Any user	Initializes TWAP values before vault use
-updatePublic()	Public	Any user	Forces a TWAP recalculation (permissionless)
-getPriceWithTimestamp()	Vault	onlyVault	Official oracle call used by pSunDAIvaultV2
-peekPrice()	View	Any user	Returns last cached price and timestamp (no gas)
-isHealthy()	View	Any user	Checks if pairs are active and recently updated
-🔐 Access Control
+After the vault is set, the oracle becomes fully immutable and permissionless.
 
-Deployer:
-Can call setVault() once to link the vault — this action is irreversible.
+---
 
-Vault:
-Has exclusive access to getPriceWithTimestamp() — used to obtain live TWAP values.
+## Deployment Parameters
 
-Everyone Else:
-May call updatePublic(), prime(), peekPrice(), and isHealthy() freely.
+| Parameter | Description |
+|------------|-------------|
+| `_pairV1` | Address of WPLS/DAI V1 pair |
+| `_pairV2` | Address of WPLS/DAI V2 pair |
+| `_pairUSDC` | Address of WPLS/USDC pair |
+| `_wpls` | Wrapped Pulse token address |
+| `_dai` | DAI token address |
+| `_usdc` | USDC token address |
 
-After the vault link:
+---
 
-The oracle becomes 100% permissionless and immutable.
-No admin can modify, pause, or override price logic.
+## Operation
 
-🧾 Deployment Parameters
-Parameter	Type	Description
-_pairV1	address	PulseX V1 WPLS/DAI pair
-_pairV2	address	PulseX V2 WPLS/DAI pair
-_pairUSDC	address	PulseX V2 WPLS/USDC pair
-_wpls	address	Wrapped Pulse token
-_dai	address	DAI token
-_usdc	address	USDC token
-💡 How It Works
+1. Each pair’s cumulative price is fetched from UniswapV2-style pairs.  
+2. Time-weighted averages are computed using cumulative deltas and elapsed time.  
+3. Each TWAP is validated for:
+   - Minimum reserve liquidity (`> $50,000`)
+   - Freshness under 2 minutes
+   - 30-minute minimum interval  
+4. Valid prices are combined:
+   - One valid → used directly  
+   - Two valid → averaged (within 3% deviation)
+   - Three valid → median used (outlier removed)  
+5. Final price normalized to `1e18` for consistent scaling.
 
-Each pair’s cumulative prices are fetched from Uniswap V2’s price0CumulativeLast() or price1CumulativeLast() fields.
+---
 
-The difference in cumulative prices over the last interval is divided by the time elapsed → TWAP.
+## Public Usage
 
-Each TWAP is validated for:
+The oracle is open to public integrations. Example:
 
-Liquidity above $50,000
+```solidity
+(uint256 price, uint256 ts) = oracle.peekPrice();
+require(block.timestamp - ts < 300, "Stale oracle");
+Public users can also update the oracle:
 
-Freshness under 2 minutes
-
-Minimum interval of 30 minutes
-
-The valid price feeds (1–3) are combined:
-
-1 valid: returned directly
-
-2 valid: averaged (within 3% deviation)
-
-3 valid: median filter (outlier removed)
-
-Final price is normalized to 1e18 scale for universal compatibility.
-
-🧰 Example Usage
-(uint256 price, uint256 timestamp) = oracle.peekPrice();
-if (block.timestamp - timestamp < 300) {
-    // Safe to use the oracle price
-}
-
-
-To refresh the oracle manually:
-
+solidity
+Copy code
 oracle.updatePublic();
+Or prime it manually:
 
-
-Or pre-prime it before vault activation:
-
+solidity
+Copy code
 oracle.prime();
+Health Monitoring
+solidity
+Copy code
+bool ok = oracle.isHealthy();
+require(ok, "Oracle is stale");
+Ensures at least one pair has updated within the last 15 minutes.
 
-📊 Health Check
-
-Use isHealthy() to confirm pairs are still updating:
-
-bool healthy = oracle.isHealthy();
-require(healthy, "Oracle is stale");
-
-
-This function ensures at least one pair updated within the last 15 minutes.
-
-🪙 Price Scaling Example
-Pair	Stable	Decimals	Normalized
-WPLS/DAI	DAI	18	1e18
-WPLS/USDC	USDC	6	scaled × 1e12 to 1e18
-⚙️ Constants Summary
+Constants
 Constant	Value	Description
-PRECISION	1e18	Global scaling factor
-MIN_RESERVE_USD	50,000e18	Minimum stable-side liquidity
-MAX_DEVIATION_BPS	300	3% max allowed difference between sources
-MAX_PRICE_AGE	120 sec	Maximum time before price is stale
-MIN_TWAP_INTERVAL	1800 sec	Minimum 30-minute rolling TWAP
-🧱 Integration Notes
+PRECISION	1e18	Scaling factor
+MIN_RESERVE_USD	50,000 × 1e18	Minimum stable-side liquidity
+MAX_DEVIATION_BPS	300	Maximum deviation between pair prices (3%)
+MAX_PRICE_AGE	120 sec	Maximum allowed staleness
+MIN_TWAP_INTERVAL	1800 sec	Minimum 30-minute interval between updates
 
-Designed for PulseChain / PulseX Uniswap V2 forks.
+Integration Notes
+Designed for PulseChain / PulseX (UniswapV2) infrastructure.
 
-Works seamlessly with pSunDAIvaultV2 and any future Autonomous Stable Assets.
+Compatible with any Autonomous Stable Asset vault.
 
-Can be adopted by other protocols as a universal WPLS → USD price feed.
+May be used by third-party protocols as a public price oracle.
 
-Supports keeper bots for updatePublic() every 15–30 minutes.
+Supports automated keepers for periodic updates via updatePublic().
 
-🧑‍💻 Author & Credits
-
+Author
 Elite Team6
 
-🌐 Website: https://sundaitoken.com
+Website: https://sundaitoken.com
 
-📘 Docs: https://github.com/ELITEv5/AutonomousStableAssets
+Documentation: https://github.com/ELITEv5/AutonomousStableAssets
 
-🧠 Architect: Autonomous Stable Asset System, PulseChain Edition
+License: MIT
 
-⚠️ Disclaimer
+Chain: PulseChain
 
-This contract is provided as-is without warranties.
-All parameters are immutable — once deployed and vault-linked, the oracle operates fully autonomously.
-Ensure that trading liquidity and pair freshness are monitored before linking to production vaults.
+Version: pSunDAITriOracleEliteV2_PulseX_Final
+
+Disclaimer
+This contract is immutable and operates fully autonomously once deployed and linked.
+Ensure sufficient trading activity and liquidity before relying on its output in production systems.
