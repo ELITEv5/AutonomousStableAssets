@@ -7,7 +7,7 @@ by **Elite Team6**
 
 ## 🔥 Overview
 
-**pSunDAIvaultV2** is an *immutable, autonomous* stablecoin vault built for the **PulseChain** ecosystem.  
+**pSunDAIvaultV2** is an *immutable, autonomous* stable asset vault built for the **PulseChain** ecosystem.  
 It represents the **final-form evolution** of decentralized collateralization — a vault that requires no admin, no governance, and no human maintenance.
 
 Every rule of operation — collateralization, liquidation, safety ratios, cooldowns, and oracle management — is **self-enforced** on-chain, deterministically and transparently.
