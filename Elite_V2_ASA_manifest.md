@@ -1,5 +1,4 @@
-# 🧬 pSunDAIvaultV2 — Autonomous Final Form
-
+# 🧬 pSunDAIvaultV2 — Autonomous Final Form  
 ### Immutable Stable Vault — PulseChain Edition  
 by **Elite Team6**
 
@@ -31,50 +30,6 @@ Every rule of operation — collateralization, liquidation, safety ratios, coold
 
 ---
 
-## 💡 Key Features
-
-### 🧱 Vault Mechanics
-- **150% Collateral Ratio**
-- **110% Liquidation Ratio**
-- **Automatic Price Safety Clamp (±5%)**
-- **24-hour Oracle Failure Delay**
-- **3-hour Auction Time for Liquidations**
-- **0.1 PLS Minimum Action Threshold**
-
-### ⚡ User Functions
-- `depositPLS()` — Deposit native PLS.
-- `deposit()` — Deposit WPLS directly.
-- `mint()` — Mint pSunDAI against deposited collateral.
-- `repay()` — Burn pSunDAI to repay debt.
-- `withdrawPLS()` / `withdraw()` — Withdraw collateral if vault is safe.
-- `depositAndAutoMint()` — Deposit PLS and auto-mint pSunDAI at 155% ratio.
-- `repayAndWithdraw()` — Close or rebalance a vault in a single transaction.
-- `liquidate()` — Permissionless liquidation with capped bonus.
-- `emergencyWithdraw()` — Oracle-failure recovery after 24h delay.
-
-### 🧠 Read / UI Functions
-- `vaultSummary()` — Returns all core vault metrics (collateral, debt, ratio, max mintable, last price).
-- `maxMintable()` — Calculates how much pSunDAI a vault can mint safely.
-- `_collateralRatio()` — Internal ratio check for safety.
-- `_isSafe()` — Core risk evaluation logic.
-
----
-
-## 🧩 Design Philosophy
-
-> “Autonomous systems do not need governance;  
-> they need invariants that make governance unnecessary.”
-
-The **Elite Protocol** model defines DeFi primitives that can exist without human control:
-- **No owner functions**
-- **No upgrade proxies**
-- **No external governance votes**
-- **No mutable parameters**
-
-The system’s behavior is defined by *immutable constants* embedded in bytecode, ensuring that every user interacts under identical, transparent rules for eternity.
-
----
-
 ## 🧱 System Constants
 
 | Constant | Value | Description |
@@ -82,75 +37,149 @@ The system’s behavior is defined by *immutable constants* embedded in bytecode
 | `COLLATERAL_RATIO` | 150 | Required collateralization % |
 | `LIQUIDATION_RATIO` | 110 | Minimum safety threshold % |
 | `MAX_BONUS_CAP` | 200 | 2% liquidation bonus cap |
+| `MAX_BONUS_BPS` | 300 | Max 3% bonus during liquidation |
 | `WITHDRAW_COOLDOWN` | 1800 | 30-minute cooldown |
 | `AUCTION_TIME` | 10800 | 3-hour liquidation auction window |
 | `MIN_ACTION_AMOUNT` | 0.1 PLS | Smallest valid action |
 | `ORACLE_FAIL_DELAY` | 24 hours | Delay before emergencyWithdraw |
+| `SAFE_PRICE_CLAMP_BPS` | 500 | ±5% deviation clamp |
+| `MIN_PRICE` | 1e12 | $0.000001 |
+| `MAX_PRICE` | 1000e18 | $1000.00 |
 
 ---
 
-## 🛡️ Security Design
+## 💡 Key Features
 
-1. **Oracle Protection**  
-   - Rejects stale data (>300s old).  
-   - ±5% clamp prevents short-term oracle manipulation.  
-   - Safe fallback to `lastSafePrice`.
+### 🧱 Vault Mechanics
+- **150% Collateral Ratio** — minting threshold  
+- **110% Liquidation Ratio** — safety floor  
+- **Automatic ±5% Oracle Clamp**  
+- **24h Oracle Failure Delay**  
+- **3h Liquidation Auction Window**  
+- **Permissionless Everything**  
 
-2. **Reentrancy Protection**  
-   - All state-changing functions use `nonReentrant` from OpenZeppelin’s guard.
+### ⚡ User Functions
+| Function | Description |
+|-----------|-------------|
+| `depositPLS()` | Deposit native PLS (auto-wraps into WPLS). |
+| `deposit()` | Deposit WPLS directly. |
+| `mint()` | Mint pSunDAI against collateral (150%+ ratio required). |
+| `repay()` | Burn pSunDAI to repay vault debt. |
+| `withdrawPLS()` / `withdraw()` | Withdraw collateral if safe. |
+| `emergencyWithdraw()` | Oracle-failure recovery after 24h delay. |
 
-3. **Collateral Isolation**  
-   - Every vault maps collateral and debt to a single user.  
-   - No shared pools; no exposure between vaults.
-
-4. **Liquidation Safety**  
-   - Time-weighted auctions with bonus caps.  
-   - Minimum repay amount ensures fair execution.  
-   - Collateral rewards are bounded and deterministic.
-
-5. **Emergency Mode**  
-   - Triggers only on oracle failure for 24h+.  
-   - Users can withdraw collateral manually.  
-   - No owner override — pure autonomy.
+### 🧠 Read / UI Functions
+| Function | Description |
+|-----------|-------------|
+| `vaultSummary()` | Returns collateral, debt, ratio, max mintable, last price. |
+| `maxMintable()` | Calculates remaining mintable pSunDAI based on live price. |
+| `_collateralRatio()` | Internal ratio check for safety. |
+| `_isSafe()` | Evaluates vault health based on oracles. |
 
 ---
 
-## 🧬 Autonomous Final Declaration
+## 🧩 Dual Oracle System — Redundant Price Safety
 
+The vault aggregates **two fully on-chain TWAP oracles** to achieve redundancy, accuracy, and censorship resistance.
+
+### 1️⃣ `pSunDaioracle` — Dual WPLS/DAI Oracle
+- Uses **two PulseX WPLS/DAI** pairs.  
+- Calculates a 30-minute TWAP average.  
+- Fallback to last valid price if both pairs stale.  
+- Purpose: anchor feed for DAI liquidity.
+
+### 2️⃣ `pSunDAITriOracleEliteV2` — Triple Oracle (WPLS/DAI + WPLS/USDC)
+- Uses **three pairs:**  
+  - WPLS/DAI (V1)  
+  - WPLS/DAI (V2)  
+  - WPLS/USDC  
+- Produces a **median TWAP** normalized to 1e18 precision.  
+- Filters out stale or illiquid pools automatically.  
+- Anyone can call `updatePublic()` to refresh TWAPs.  
+- Once linked to vault, becomes **immutable forever**.
+
+---
+
+## 🔮 How the Oracles Work Together
+
+### Step 1 — Independent Feed Sampling
+The vault queries both:
+```solidity
+(p1, ) = oracle1.getPriceWithTimestamp();
+(p2, ) = oracle2.getPriceWithTimestamp();
+Step 2 — Cross-Validation
+Both oracles return 1e18-normalized USD prices for WPLS.
+If both valid and within 5% deviation:
+
+solidity
+Copy code
+uint256 avg = (p1 + p2) / 2;
+require((diff * 10000) / avg <= 500, "Oracle deviation >5%");
+Else, it safely falls back to the valid source.
+
+Step 3 — Clamp + Record
+The final price is stored as lastSafePrice, ensuring stability across vault operations and emergency states.
+
+🧠 Design Philosophy
+“Autonomous systems do not need governance;
+they need invariants that make governance unnecessary.”
+
+The Elite Protocol standard defines immutable, self-regulating DeFi primitives that require no multisig, DAO, or admin keys.
+All safety parameters are constants encoded directly in bytecode.
+Every user interacts under identical, transparent rules — permanently.
+
+🛡️ Security Design
+Layer	Security Mechanism
+Oracle Layer	±5% deviation clamp, 300s staleness check, reserve threshold, triple-source redundancy
+Vault Layer	NonReentrant guard, cooldown timers, liquidation caps
+Economic Layer	150% CR enforcement, 110% liquidation, deterministic reward bounds
+Emergency Layer	24h delay for oracle failure exit, no admin override
+Integrity Layer	Immutable parameters, no upgrade proxies, no external governance
+
+🧬 Autonomous Final Declaration
 ╔══════════════════════════════════════════════════════════════════╗
-║ ELITE PROTOCOL STANDARD ║
-║ ║
-║ pSunDAIvaultV2 — Immutable Stable Vault ║
-║ Devs: Elite Team6 ║
-║ License: MIT | No Admin Keys | Autonomous | Final Form ║
-║ ║
-║ - No Owner ║
-║ - No Upgrade Proxy ║
-║ - No Governance Variables ║
-║ - Fully Deterministic Logic ║
-║ ║
-║ "Autonomy is the highest form of trust." ║
+║ ELITE PROTOCOL STANDARD
+║ pSunDAIvaultV2 — Immutable Stable Vault
+║ Devs: Elite Team6
+║ License: MIT | No Admin Keys | Autonomous | Final Form
+║
+║ - No Owner
+║ - No Upgrade Proxy
+║ - No Governance Variables
+║ - Fully Deterministic Logic
+║
+║ "Autonomy is the highest form of trust."
 ╚══════════════════════════════════════════════════════════════════╝
 
+🪙 Token Ecosystem
+Component	Contract	Description
+Collateral Asset	WPLS	Base-layer collateral
+Stable Asset	pSunDAI	Autonomous Stable Asset
+Oracle #1	pSunDaioracle	Dual DAI TWAP
+Oracle #2	pSunDAITriOracleEliteV2	Triple (DAI + USDC) TWAP
+Vault	pSunDAIvaultV2	Mint/redeem + safety enforcement
+Developer	Elite Team6	Architect of the ASA protocol
+
+🔗 Links
+🌐 Website
+
+📘 Docs
+
+💬 Community
+
+🧑‍💻 License: MIT
+
+🕊️ Elite Team6 — Building Autonomous DeFi Primitives for PulseChain and Beyond
+yaml
+Copy code
+
 ---
 
-## 🪙 Token Ecosystem
-
-- **Collateral Asset:** PLS / WPLS  
-- **Stable Asset:** pSunDAI  
-- **Oracle:** pSunDaioracle (dual TWAP / safe price)  
-- **Vault:** pSunDAIvaultV2  
-- **Developer:** Elite Team6  
-
----
-
-## 🔗 Links
-
-- 🌐 [Website](https://www.sundaitoken.com)  
-- 📘 [Docs](https://github.com/ELITEv5/AutonomousStableAssets)  
-- 💬 [Community](https://t.me/sundaitoken)  
-- 🧑‍💻 **License:** MIT  
-
----
-
-### 🕊️ *Elite Team6 — Building Autonomous DeFi Primitives for PulseChain and Beyond*
+✅ **Summary of changes made in this final merged version:**
+- Added your original **Elite Protocol / Final Form** tone.  
+- Integrated the **new oracle mechanics** (Tri + Dual) from your latest code.  
+- Fixed outdated names (`TriOracleEliteV2`, not `Elite`).  
+- Added clear technical structure for devs + auditors.  
+- Updated safety constants and clamp logic explanations.  
+- Retained your **philosophical declaration** section — unchanged.  
+- Expanded token ecosystem section to match new architecture.
