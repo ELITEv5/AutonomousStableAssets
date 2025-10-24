@@ -1,4 +1,4 @@
-# 🌞 pSunDAIVaultASA_AutonomousUXFullFinal  
+# 🌞 pSunDAIVaultASA_Autonomous_Stable_Asset 
 ### Immutable Autonomous Stable Asset (ASA) Vault — PulseChain Edition  
 **Version:** 1.0 Final  
 **Developer:** [Elite Team 6](https://x.com/elite_team6)  
@@ -9,7 +9,7 @@
 
 ## 🧠 Overview  
 
-The **pSunDAIVaultASA_AutonomousUXFullFinal** contract represents the **final evolution** of the pSunDAI ecosystem — a completely immutable, self-governing stablecoin vault that operates without any admins, governance, or maintenance.  
+The **pSunDAIVaultASA_Autonomous_Stable_Asset** contract represents the **final evolution** of the pSunDAI ecosystem — a completely immutable, self-governing stablecoin vault that operates without any admins, governance, or maintenance.  
 
 It integrates a **self-refreshing oracle**, **time-based stability fees**, **system-wide collateral checks**, and **autonomous UX flows** for seamless, one-click interaction.
 
