@@ -22,8 +22,8 @@ It integrates a **self-refreshing oracle**, **time-based stability fees**, **sys
 | Layer | Contract | Role | Immutable |
 |--------|-----------|------|-----------|
 | Base Token | `pSunDAIV8` | ERC-20 stable asset, mint/burn controlled by vault | ✅ Yes |
-| Vault | `pSunDAIVaultASA_AutonomousUXFullFinal` | Collateral, debt, minting, liquidation | ✅ Yes |
-| Oracle | `pSunDAIoraclePLSX_AutonomousUXFinal` | Median-filtered, tri-pair TWAP hybrid | ✅ Yes |
+| Vault | `pSunDAIVault_ASA_Autonomous_Stable_Asset` | Collateral, debt, minting, liquidation | ✅ Yes |
+| Oracle | `pSunDAIoraclePLSX` | Median-filtered, tri-pair TWAP hybrid | ✅ Yes |
 | Interface | `IWPLS` | WPLS wrapper for native PulseChain PLS | ✅ Standard |
 
 ---
