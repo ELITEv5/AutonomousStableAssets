@@ -1,24 +1,25 @@
-Copyright (c) 2025 Elite Team 6 (@elite_team6)
+Copyright (c) 2025 ELITE LABS LLC  
+All rights reserved.  
+SunDAI Autonomous Stable Asset (ASA) Protocol  
+Website: https://www.sundaitoken.com  
+Contact: dev@sundaitoken.com
 
-This source code is provided under the Business Source License 1.1.
+Licensed under the MIT License (see below).
 
-Licensor: Elite Team 6  
-Licensed Work: pSunDAI Stable Asset Protocol  
-Change Date: January 1, 2030  
-Change License: GNU General Public License v3.0 or later
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-Usage Grant:
-You may use, copy, modify, and distribute this work for non-commercial purposes,
-provided that proper attribution is given to Elite Team 6 and the pSunDAI project.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-Commercial Usage:
-Commercial use, deployment, or monetization of this work (including front-ends, forks,
-or derivative products that charge fees or generate revenue) requires a separate
-commercial license from Elite Team 6.
-
-Attribution:
-You must retain the following credit in all copies or substantial portions of the software:
-“Built by Elite Team 6 (@elite_team6) — Immutable Public Infrastructure © 2025.”
-
-Warranty Disclaimer:
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
