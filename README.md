@@ -94,12 +94,13 @@ All parameters are **hardcoded and immutable** — no DAO votes or admin adjustm
 ## 🪙 License
 
 ```text
-MIT License
-
-Copyright (c) 2025 ELITE TEAM6  
-SunDAI Autonomous Stable Asset (ASA)  
+Copyright (c) 2025 ELITE LABS LLC  
+All rights reserved.  
+SunDAI Autonomous Stable Asset (ASA) Protocol  
 Website: https://www.sundaitoken.com  
 Contact: dev@sundaitoken.com
+
+Licensed under the MIT License (see below).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -118,8 +119,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-🏁 “Built for Freedom.”
-No banks. No custodians. No permission.
-Only math, code, and collateral.
 
-— SunDAI ASA by ELITE TEAM6
