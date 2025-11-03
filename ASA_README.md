@@ -2,7 +2,7 @@
 An ASA is a crypto-collateralized, immutable smart contract system designed to maintain stability through over-collateralization and autonomous liquidation logic.  
 It operates without issuers, governance, or fiat reserves — representing a new class of on-chain monetary asset.
 
-© 2025 Elite Team 6 — SunDAI™, pSunDAI™, and Destiny Vault™ are independent decentralized protocols.  
+© 2025 ELITE LABS LLC — SunDAI™, pSunDAI™, and Destiny Vault™ are independent decentralized protocols.  
 Not affiliated with MakerDAO or the DAI stablecoin.
 
 
